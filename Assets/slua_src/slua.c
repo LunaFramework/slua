@@ -41,9 +41,15 @@
 #include <math.h>
 #endif
 
+int luaopen_sproto_core(lua_State *L);
+int luaopen_luv(lua_State *L);
+int luaopen_lpeg (lua_State *L);
+
+
 static const luaL_Reg s_lib_preload[] = {
-	// { "lpeg", luaopen_lpeg },
-  	// { "pb",    luaopen_pb }, // any 3rd lualibs added here
+    { "luv", luaopen_luv},
+    { "sproto.core", luaopen_sproto_core},
+    { "lpeg", luaopen_lpeg},
   	{ NULL,        NULL }
 };
 
@@ -77,17 +83,78 @@ static const char *luaL_findtable(lua_State *L, int idx,
 #endif
 
 LUA_API void luaS_openextlibs(lua_State *L) {
+    
+    // 不兼容5.1的写法
+#if 0
 	const luaL_Reg *lib;
 
-	luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
-		sizeof(s_lib_preload)/sizeof(s_lib_preload[0])-1);
+    lua_getfield(L, LUA_ENVIRONINDEX, "preload");
 
 	for (lib = s_lib_preload; lib->func; lib++) {
+#if 0
+        // preload不起作用
 		lua_pushcfunction(L, lib->func);
 		lua_setfield(L, -2, lib->name);
+#else
+        // 设置到全局，但是也不给力
+        lua_register(L, lib->name, lib->func);
+#endif
 	}
 
 	lua_pop(L, 1);
+#endif
+    
+    
+    
+    // openlib 虽然可以，但是是错误的
+#if false
+    luaI_openlib(L, "sproto.core", s_lib_preload, 0);
+    
+    const luaL_Reg *lib;
+    
+    luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
+                   sizeof(s_lib_preload)/sizeof(s_lib_preload[0])-1);
+    
+    for (lib = s_lib_preload; lib->func; lib++) {
+#if 0
+        lua_pushcfunction(L, lib->func);
+        lua_setfield(L, -2, lib->name);
+#else
+        lua_register(L, lib->name, lib->func);
+#endif
+        
+    }
+    
+    lua_pop(L, 1);
+#endif
+    
+    
+#if false
+    lua_getfield(L, LUA_ENVIRONINDEX, "preload");
+    if (!lua_istable(L, -1))
+        luaL_error(L, LUA_QL("package.preload") " must be a table");
+    const luaL_Reg *lib;
+    
+    for (lib = s_lib_preload; lib->func; lib++) {
+        lua_pushcfunction(L, lib->func);
+        lua_setfield(L, -2, lib->name);
+    }
+    
+    lua_pop(L, 1);
+#endif
+    
+    // 直接设置到loaded
+    const luaL_Reg *lib;
+    //lua_pushvalue(L, LUA_GLOBALSINDEX);
+    luaL_findtable(L, LUA_REGISTRYINDEX, "_LOADED", 2);
+    for (lib = s_lib_preload; lib->func; lib++) {
+        lua_pushcfunction(L, lib->func);
+        lua_call(L, 0, 1);
+        lua_setfield(L, -2, lib->name);
+    }
+    
+    lua_pop(L, 2);
+    
 }
 
 LUA_API void luaS_newuserdata(lua_State *L, int val)

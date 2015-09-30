@@ -1,0 +1,9 @@
+local server = {}
+
+function server:init(ip, port)
+    
+end
+
+
+
+return server

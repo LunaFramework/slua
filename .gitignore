@@ -9,3 +9,6 @@ obj/*
 /Assets/Slua/LuaObject
 /ProjectSettings
 /*.csproj
+slua-csharp.sln
+slua.sln
+slua.userprefs

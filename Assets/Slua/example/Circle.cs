@@ -11,10 +11,10 @@ public class Circle : MonoBehaviour {
 	void Start () {
 		svr = new LuaSvr();
 		self=(LuaTable)svr.start("circle/circle");
-		update = (LuaFunction)self["update"];
+		//update = (LuaFunction)self["update"];
 	}
 	
 	void Update () {
-		update.call(self);
+		//update.call(self);
 	}
 }
