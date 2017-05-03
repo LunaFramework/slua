@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using LuaInterface;
 using SLua;
 using System;
 
@@ -17,7 +16,10 @@ public class Custom : MonoBehaviour
 	{
 		c = this;
 		l = new LuaSvr();
-		l.start("custom");
+		l.init(null, () =>
+		{
+			l.start("custom");
+		});
 	}
 
 	// Update is called once per frame
@@ -31,10 +33,11 @@ public class Custom : MonoBehaviour
 	static public int instanceCustom(IntPtr l)
 	{
 		Custom self = (Custom)LuaObject.checkSelf(l);
+		LuaObject.pushValue(l, true);
 		LuaDLL.lua_pushstring(l, "xiaoming");
 		LuaDLL.lua_pushstring(l, "hanmeimei");
 		LuaDLL.lua_pushinteger(l, self.v);
-		return 3;
+		return 4;
 	}
 
 	// this exported function don't generate stub code, only register it
@@ -42,9 +45,10 @@ public class Custom : MonoBehaviour
 	[StaticExport]
 	static public int staticCustom(IntPtr l)
 	{
+		LuaObject.pushValue(l, true);
 		LuaDLL.lua_pushstring(l, vs);
 		LuaObject.pushObject(l, c);
-		return 2;
+		return 3;
 	}
 	public int this[string key]
 	{
@@ -66,4 +70,28 @@ public class Custom : MonoBehaviour
 	{
 		return t.Name;
 	}
+}
+
+
+namespace SLua {
+	
+	[OverloadLuaClass(typeof(GameObject))]
+	public class MyGameObject : LuaObject {
+		[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+		public static int Find_s(IntPtr l) {
+			UnityEngine.Debug.Log ("GameObject.Find overloaded my MyGameObject.Find");
+			try {
+				System.String a1;
+				checkType(l,1,out a1);
+				var ret=UnityEngine.GameObject.Find(a1);
+				pushValue(l,true);
+				pushValue(l,ret);
+				return 2;
+			}
+			catch(Exception e) {
+				return error(l,e);
+			}
+		}
+	}
+
 }

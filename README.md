@@ -1,56 +1,77 @@
-#slua
-Fastest Unity lua binding via static code generating.
+# slua
+Fastest lua binding via static code generating for Unity3D or mono
 
-QQ group: 15647305 (in chinese)
+Website: http://www.slua.net
 
-Support QA: http://www.unityqa.com/ (in chinese)
+Mail List: [Subscribe](http://www.freelists.org/list/slua) (in English only)
 
-Mail to : sineysan#163.com (both of chinese/english)
+QQ group: 15647305 (in Chinese)
+
+Mail to : sineysan#163.com (both of Chinese/English)
+
+## Continuous Integration Build
+
+| Build | Platform | Type    | Status  |
+| ---   | ---      | ---     | ---     |
+| *slua-unity* | None | None | None |
+| **slua-standalone** | Linux   | Test,Build | [![Build Status](https://travis-ci.org/mr-kelly/slua.svg)](https://travis-ci.org/mr-kelly/slua) |
+| **slua-standalone** | Windows | Test,Build,Deploy | [![Build status](https://ci.appveyor.com/api/projects/status/vokwhnu95lx5e8g3?svg=true)](https://ci.appveyor.com/project/mr-kelly/slua) |
+
+## Release Download
+
+- [slua-unity](https://github.com/pangweiwei/slua/releases/latest)
+- [slua-standalone](https://www.nuget.org/packages/slua-standalone)
+
+## Integrate with 3rd Lua Library
+
+Standard slua release doesn't contains any 3rd Lua library(like protobuf, lpeg etc), if you want to use this library, can visit this forked repo https://github.com/luzexi/slua, it focus slua on integrate with other 3rd library.
+
+## Use SLua without Unity3D
+
+You can use slua without Unity3D dependency, it call **slua-standalone**. Useful for C# server development. Find it on https://www.nuget.org/packages/slua-standalone , and it's maintained by https://github.com/mr-kelly/slua.
 
 
-##Release Download
+## Demo with slua
+This repo http://linkcloud.github.io/ poker game using slua.
 
-[here.](https://github.com/pangweiwei/slua/releases/latest)
+This repo https://github.com/mr-kelly/KSFramework based on slua for hot reloadable asset bundle framework.
 
-##Help
+This repo https://github.com/lulersoft/ME_SLua based on slua for simple game framework.
 
-See inner demo for help or [Document](doc.md) (in chinese).
+This repo https://github.com/yaukeywang/2DPlatformer-SLua demonstrate 2DPlatformer game using slua.
 
-##Important
+This repo https://github.com/tenvick/hugula demonstrate Tetris game using slua.
+
+## Help
+
+See inner demo for help or [Document](../../wiki/中文帮助) (in chinese).
+
+## Important
 
 For running demo sucessful, you should generate lua wrap file by your self:
 
 Click menu, SLua->All->Make  generate all wrap file for your version of unity.
 
-***Had tested for Unity4.6.1/4.6.2/4.6.3/5.0/5.1***
+***Had tested for Unity4.6.1/4.6.2/4.6.3/5.0/5.1/5.2/5.3/5.4/5.5***
 
-##Main feature
+## Main feature
 
-static code generating, no reflection, no extra gc alloc, very fast
+- static code generating, no reflection, no extra gc alloc, very fast
+- remote debugger
+- full support iOS/iOS64, support il2cpp
+- above 90% UnityEngine interface exported ( remove flash, platform dependented interface )
+- 100% UnityEngine.UI interface ( require Unity4.6+ )
+- support standalone mode in .net framework/mono without Unity3D
+- support UnityEvent/UnityAction for event callback via lua function
+- support delegate via lua function (include iOS)
+- support yield call
+- support custom class exported
+- support extension method
+- export enum as integer
+- return array as lua table
+- using raw luajit, can be replaced with lua5.3/lua5.1
 
-lua console for debug
-
-full support iOS/iOS64, support il2cpp
-
-above 90% UnityEngine interface exported ( remove flash, platform dependented interface )
-
-100% UnityEngine.UI interface ( require Unity4.6+ )
-
-support UnityEvent/UnityAction for event callback via lua function
-
-support delegate via lua function (include iOS)
-
-support yield call
-
-support custom class exported
-
-export enum as integer
-
-return array as lua table
-
-using raw luajit, can be replaced with lua5.3/lua5.1, link with slua.c, if you switch to lua5.3, add LUA_5_3 macro in build setting.
-
-##Usage
+## Usage
 
 copy Assets/Plugins Assets/Slua to your $Project$/Assets folder, you will see Slua menu, 
 
@@ -67,7 +88,7 @@ Slua/LuaObject contain pre-generated file for exported interface.
 Precompiled slua library in Plugins only included x86(32bit)/macosx(32bit)/iOS(armv7,armv7s,arm64)/Android(armv7-a) platform using luajit, you should compile other platform/lua5.1/luajit by yourself, see build.txt for help.
 
 
-##Usage at a glance
+## Usage at a glance
 
 ~~~~~~~~~~lua
 
@@ -133,6 +154,7 @@ end
 
 ~~~~~~~~~~
 
+
 ##Export custom class
 
 add CustomLuaClass attribute to your custom class, waiting for compile completed, click "SLua->Custom->Make", you will get interface file for lua.
@@ -146,7 +168,8 @@ public class HelloWorld   {
 
 ~~~~~~~~~~
 
-###Benchmark
+
+### Benchmark
 
 see http://www.sineysoft.com/post/164 for detail (in chinese), compared with ulua/raw mono.
 

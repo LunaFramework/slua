@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using SLua;
 using System;
-using LuaInterface;
+
+#if UNITY_5_5_OR_NEWER
+using UnityEngine.Profiling;
+#endif
 
 [CustomLuaClass]
 public struct foostruct
@@ -13,10 +16,33 @@ public struct foostruct
 }
 
 [CustomLuaClass]
-public class SLuaTest : MonoBehaviour { }
+public class FloatEvent : UnityEngine.Events.UnityEvent<float>
+{
+	public FloatEvent() { }
+}
+
+[CustomLuaClass]
+public class ListViewEvent : UnityEngine.Events.UnityEvent<int,string> {
+	
+}
+
+[CustomLuaClass]
+public class SLuaTest : MonoBehaviour {
+	public FloatEvent intevent;
+}
 
 [CustomLuaClass]
 public class XXList : List<int> { }
+
+[CustomLuaClass]
+abstract public class AbsClass {
+
+	// this constructor should not been exported for test
+	public AbsClass() {
+	}
+
+	public int x;
+}
 
 
 public class Ref
@@ -37,7 +63,9 @@ public class Ref
 [CustomLuaClass]
 public class HelloWorld
 {
+	public Color32 cc;
 
+	public UnityEngine.Events.UnityAction someAct;
 	static public void say()
 	{
 		Debug.Log("hello world");
@@ -46,6 +74,24 @@ public class HelloWorld
 	static public byte[] bytes()
 	{
 		return new byte[] { 51, 52, 53, 53 };
+	}
+
+	static public void int16Array(Int16[] array) {
+		foreach(Int16 i in array) {
+			Debug.Log("output int16 "+i);
+		}
+	}
+
+	static public Vector3[] vectors()
+	{
+		return new Vector3[] { Vector3.one, Vector3.zero, Vector3.up };
+	}
+
+	static public void nullf(int? a=null) {
+		if (a == null)
+			Debug.Log("null");
+		else
+			Debug.Log(a);
 	}
 
 	public IEnumerator y()
@@ -83,6 +129,9 @@ public class HelloWorld
 
 	static public void setv(LuaTable t)
 	{
+		Debug.Log ("negative index test " + t [-2]);
+		Debug.Log ("zero index test " + t [0]);
+		
 		foreach (LuaTable.TablePair pair in t)
 		{
 			Debug.Log(string.Format("foreach LuaTable {0}-{1}", pair.key, pair.value));
